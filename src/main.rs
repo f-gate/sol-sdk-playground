@@ -31,7 +31,7 @@ fn main() {
     match res {
         Ok(page_data) => {
 
-          let balance = to_sol(page_data.account_data.lamports.clone());  
+          let balance = to_sol(page_data.account_data.lamports);  
           println!("\nSol Balance: {:?}", balance);
 
           println!("\nSPL Tokens: {}", page_data.token_accounts.len());

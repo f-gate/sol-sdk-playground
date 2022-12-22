@@ -9,7 +9,6 @@ use solana_client::{
     rpc_client::RpcClient,
     rpc_response::RpcKeyedAccount
 };
-use solana_account_decoder::parse_token::{UiTokenAmount, spl_token_pubkey};
 
 // Maybe this can hold some needed state for the page;
 pub struct AccountSummeryPage<'a> {
