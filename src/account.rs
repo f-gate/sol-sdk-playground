@@ -2,14 +2,20 @@
 use solana_sdk::{
     pubkey::Pubkey,
     account::Account, transport::TransportError    
-};
 
-use solana_client::rpc_client::RpcClient;
+};
+use std::str::FromStr;
+use solana_client::{
+    rpc_client::RpcClient,
+    rpc_response::RpcKeyedAccount
+};
+use solana_account_decoder::parse_token::{UiTokenAmount, spl_token_pubkey};
 
 // Maybe this can hold some needed state for the page;
 pub struct AccountSummeryPage<'a> {
     pub client: &'a RpcClient,
     pub account_data: Account,
+    pub token_accounts: Vec<RpcKeyedAccount>,
 }
 
 /// The general idea is that a page and its associated data can be held in memory.
@@ -17,12 +23,15 @@ pub struct AccountSummeryPage<'a> {
 /// Perhaps there needs to be a check to see if the connection is still valid?
 impl <'a> AccountSummeryPage<'a> {
     /// Instantiate the page data for an account.
-    pub fn new(client: &'a RpcClient, pubkey: &Pubkey) -> Result<Self, TransportError> {
-        let maybe_account = client.get_account(pubkey)?;
+    pub fn new(client: &'a RpcClient, owner: &Pubkey) -> Result<Self, TransportError> {
+        let spl_tokens = <Pubkey as FromStr>::from_str("TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA").unwrap();
+        let account_data = client.get_account(owner)?;
+        let token_accounts = client.get_token_accounts_by_owner(owner,  solana_client::rpc_request::TokenAccountsFilter::ProgramId(spl_tokens))?;
         Ok(
             Self {
                 client,
-                account_data: maybe_account
+                account_data,
+                token_accounts,
             }
         )
     }
