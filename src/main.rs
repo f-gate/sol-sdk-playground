@@ -8,7 +8,7 @@ use solana_client::{
 };
 use std::{
     str::FromStr,
-    time::Duration,
+    time::Duration, sync::Arc,
 };
 
 use solana_sdk::{
@@ -20,14 +20,14 @@ fn main() {
 
     let http = "https://api.mainnet-beta.solana.com";
     let timeout = Duration::from_secs(10);
-    let client = RpcClient::new_with_timeout(http, timeout);
+    let client: Arc<RpcClient> = Arc::new(RpcClient::new_with_timeout(http, timeout));
 
     // deffo would do some error handling here. Defaulting for simplicity.
     let pub_key_string = "CEzN7mqP9xoxn2HdyW6fjEJ73t7qaX9Rp2zyS6hb3iEu";
     let pub_key = <Pubkey as FromStr>::from_str(pub_key_string).expect("static key is valid; qed");
 
     
-    let res = AccountSummeryPage::new(&client, &pub_key);
+    let res = AccountSummeryPage::new(client.clone(), &pub_key);
     match res {
         Ok(page_data) => {
 
